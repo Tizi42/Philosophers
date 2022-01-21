@@ -28,15 +28,15 @@ t_env	parse(char **av)
 {
 	t_env	env;
 
+	//if (!valide_args(av)) :  1) <= 0 2)isdigit 3)trop grand
 	env.num_philo = ft_atoi(av[1]);
 	env.timespan_die = ft_atoi(av[2]);
 	env.timespan_eat = ft_atoi(av[3]);
 	env.timespan_sleep = ft_atoi(av[4]);
 	if (av[5])
-		env.times_must_eat = ft_atoi(av[5]); //or if av[5] == NULL, will atoi just return 0?
+		env.times_must_eat = ft_atoi(av[5]); //if == 0 ? return
 	else
-		env.times_must_eat = -1
-		;
+		env.times_must_eat = -1;
 	return (env);
 }
 

@@ -24,7 +24,7 @@ LIBS	= -Llibft -lft
 
 CC		= gcc
 
-CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror -fsanitize=thread
 
 INCLUDE	= -I philo/include/ -I libft/includes/
 

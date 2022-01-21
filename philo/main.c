@@ -104,21 +104,32 @@ int	death_monitor(t_ph *ph)
 int	start_simulation(t_ph *ph)
 {
 	int	i;
+	int	j;
 
 	i = 0;
-	while (2 * i < ph->env.num_philo)
+	while (2 * i < 10)
 	{
-		pthread_create(&ph[i].tid, NULL, life_circle, &ph[2 * i]);
-		usleep(1000);
+		j = i * 2;
+		while (j < ph->env.num_philo)
+		{
+			pthread_create(&ph[j].tid, NULL, life_circle, &ph[j]);
+			j += 10;
+		}
 		i++;
 	}
+	usleep(2000);
 	i = 1;
-	while (2 * i - 1 < ph->env.num_philo)
+	while (2 * i - 1 < 10)
 	{
-		pthread_create(&ph[i].tid, NULL, life_circle, &ph[2 * i - 1]);
-		usleep(1000);
+		j = i * 2 - 1;
+		while (j < ph->env.num_philo)
+		{
+			pthread_create(&ph[j].tid, NULL, life_circle, &ph[j]);
+			j += 10;
+		}
 		i++;
 	}
+	usleep(500);
 	return (0);
 }
 
