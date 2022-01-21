@@ -15,12 +15,24 @@
 int	valid_args(int ac, char **av)
 {
 	int	i;
+	int	j;
 
 	if (ac < 5 || ac > 6)
 		return (0);
-	//other cases
-	av = NULL;
-	i = 0;
+	i = 1;
+	while (av[i])
+	{
+		j = 0;
+		while (av[i][j])
+		{
+			if (!ft_isdigit(av[i][j]))
+				return (0);
+			j++;
+		}
+		if (!within_int_limit(av[i], j))
+			return (0);
+		i++;
+	}
 	return (1);
 }
 
@@ -28,13 +40,12 @@ t_env	parse(char **av)
 {
 	t_env	env;
 
-	//if (!valide_args(av)) :  1) <= 0 2)isdigit 3)trop grand
 	env.num_philo = ft_atoi(av[1]);
 	env.timespan_die = ft_atoi(av[2]);
 	env.timespan_eat = ft_atoi(av[3]);
 	env.timespan_sleep = ft_atoi(av[4]);
 	if (av[5])
-		env.times_must_eat = ft_atoi(av[5]); //if == 0 ? return
+		env.times_must_eat = ft_atoi(av[5]);
 	else
 		env.times_must_eat = -1;
 	return (env);
@@ -64,7 +75,8 @@ t_ph	*init_ph(t_env	env, t_fork *fork)
 
 	ph = ft_malloc(sizeof(t_ph) * env.num_philo);
 	gettimeofday(&ph->t0, NULL);
-	pthread_mutex_init(&ph->print, NULL);
+	pthread_mutex_init(&ph->status_lock, NULL);
+	pthread_mutex_init(&ph->lastmeal_lock, NULL);
 	ph->exit = ft_malloc(sizeof(int));
 	*(ph->exit) = 0;
 	i = 0;
@@ -79,7 +91,8 @@ t_ph	*init_ph(t_env	env, t_fork *fork)
 		else
 			ph[i].fork_right = &fork[0];
 		ph[i].t0 = ph->t0;
-		ph[i].print = ph->print;
+		ph[i].status_lock = ph->status_lock;
+		ph[i].lastmeal_lock = ph->lastmeal_lock;
 		i++;
 	}
 	return (ph);

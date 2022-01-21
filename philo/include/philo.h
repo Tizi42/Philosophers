@@ -28,6 +28,9 @@
 # define FORK_R "has taken his right fork"
 # define DEATH "died"
 
+# define STAMP 1
+# define UPDATE 2
+
 typedef struct	s_env
 {
 	int				num_philo;
@@ -52,12 +55,22 @@ typedef struct	s_ph
 	int				*exit;
 	t_fork			*fork_left;
 	t_fork			*fork_right;
-	pthread_mutex_t print;
+	pthread_mutex_t	status_lock;
+	pthread_mutex_t	lastmeal_lock;
 	struct timeval	t0;
 	struct timeval	lastmeal;
 }	t_ph;
 
-int print_status(t_ph *ph, char *status);
+long	data_lastmeal(t_ph *ph, int action);
+
+int		eat(t_ph *ph);
+
+int		start_simulation(t_ph *ph);
+void	*life_circle(void *arg);
+int		get_fork_and_eat(t_ph *ph);
+long	get_timestamp(struct timeval t0);
+void 	print_status(t_ph *ph, char *status);
+int		update_status(t_ph *ph, char *status);
 
 /* set_up.c */
 int		valid_args(int ac, char **av);

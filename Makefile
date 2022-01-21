@@ -12,7 +12,7 @@
 
 NAME	= philosophers
 
-SRCS	= main.c set_up.c
+SRCS	= main.c set_up.c simulation.c
 
 DIRSRC	= philo
 
@@ -24,7 +24,7 @@ LIBS	= -Llibft -lft
 
 CC		= gcc
 
-CFLAGS	= -Wall -Wextra -Werror -fsanitize=thread
+CFLAGS	= -Wall -Wextra -Werror -g3 -fsanitize=thread
 
 INCLUDE	= -I philo/include/ -I libft/includes/
 

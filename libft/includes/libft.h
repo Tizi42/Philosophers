@@ -6,7 +6,7 @@
 /*   By: tyuan <tyuan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/05 20:36:56 by tyuan             #+#    #+#             */
-/*   Updated: 2020/05/12 10:55:41 by tyuan            ###   ########.fr       */
+/*   Updated: 2022/01/21 16:47:49 by tyuan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,5 +79,6 @@ int		sizeof_tab(char **tab);
 int		ft_min(int a, int b);
 void	ft_swap(int *a, int *b);
 void	*ft_malloc(size_t size);
+int		within_int_limit(char *tab, int size);
 
 #endif

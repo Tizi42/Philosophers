@@ -6,7 +6,7 @@
 #    By: tyuan <tyuan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/05 21:07:48 by tyuan             #+#    #+#              #
-#    Updated: 2020/11/10 18:12:37 by tyuan            ###   ########.fr        #
+#    Updated: 2022/01/21 16:47:05 by tyuan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CFILES	= ft_atoi.c       ft_memccpy.c    ft_putstr_fd.c  ft_strncmp.c ft_bzero.c
 				ft_strmapi.c ft_lstnew.c ft_lstadd_front.c ft_lstsize.c ft_lstlast.c ft_lstadd_back.c ft_lstdelone.c ft_lstclear.c ft_lstiter.c ft_lstmap.c \
 				get_next_line_utils.c get_next_line.c \
 				ft_printf/convert_2.c ft_printf/ft_printf.c ft_printf/tools_2.c ft_printf/convert_1.c ft_printf/ft_format.c ft_printf/tools.c     ft_printf/tools_3.c
-CFILES	+= ternary.c ft_min.c ft_swap.c ft_malloc.c free_split.c sizeof_tab.c
+CFILES	+= ternary.c ft_min.c ft_swap.c ft_malloc.c free_split.c sizeof_tab.c within_int_limit.c
 
 SRCS	= ${addprefix srcs/, ${CFILES}}
 
