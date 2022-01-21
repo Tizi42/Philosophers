@@ -21,13 +21,20 @@
 # include <stdlib.h>
 # include "libft.h"
 
+# define EAT "is eating"
+# define SLEEP "is sleeping"
+# define THINK "is thinking"
+# define FORK_L "has taken his left fork"
+# define FORK_R "has taken his right fork"
+# define DEATH "died"
+
 typedef struct	s_env
 {
-	unsigned int	num_philo;
+	int				num_philo;
 	unsigned int	timespan_die;
 	unsigned int	timespan_eat;
 	unsigned int	timespan_sleep;
-	unsigned int	times_must_eat;
+	int				times_must_eat;
 }	t_env;
 
 typedef struct	s_fork
@@ -42,17 +49,21 @@ typedef struct	s_ph
 	pthread_t		tid;
 	int				phid;
 	t_env			env;
+	int				*exit;
 	t_fork			*fork_left;
 	t_fork			*fork_right;
+	pthread_mutex_t print;
 	struct timeval	t0;
 	struct timeval	lastmeal;
 }	t_ph;
 
+int print_status(t_ph *ph, char *status);
+
 /* set_up.c */
 int		valid_args(int ac, char **av);
-t_env	*parse(char **av);
+t_env	parse(char **av);
 t_fork	*init_forks(int num_philo);
-t_ph	*init_ph(t_env	env, t_fork *fork, struct timeval t0);
+t_ph	*init_ph(t_env	env, t_fork *fork);
 
 
 #endif

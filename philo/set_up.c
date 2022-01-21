@@ -24,19 +24,19 @@ int	valid_args(int ac, char **av)
 	return (1);
 }
 
-t_env	*parse(char **av)
+t_env	parse(char **av)
 {
-	t_env	*env;
+	t_env	env;
 
-	env = ft_malloc(sizeof(t_env));
-	env->num_philo = ft_atoi(av[1]);
-	env->timespan_die = ft_atoi(av[2]);
-	env->timespan_eat = ft_atoi(av[3]);
-	env->timespan_sleep = ft_atoi(av[4]);
+	env.num_philo = ft_atoi(av[1]);
+	env.timespan_die = ft_atoi(av[2]);
+	env.timespan_eat = ft_atoi(av[3]);
+	env.timespan_sleep = ft_atoi(av[4]);
 	if (av[5])
-		env->times_must_eat = ft_atoi(av[5]); //or if av[5] == NULL, will atoi just return 0?
+		env.times_must_eat = ft_atoi(av[5]); //or if av[5] == NULL, will atoi just return 0?
 	else
-		env->times_must_eat = 0;
+		env.times_must_eat = -1
+		;
 	return (env);
 }
 
@@ -57,23 +57,29 @@ t_fork	*init_forks(int num_philo)
 	return (fork);
 }
 
-t_ph	*init_ph(t_env	env, t_fork *fork, struct timeval t0)
+t_ph	*init_ph(t_env	env, t_fork *fork)
 {
 	int				i;
 	t_ph			*ph;
 
 	ph = ft_malloc(sizeof(t_ph) * env.num_philo);
+	gettimeofday(&ph->t0, NULL);
+	pthread_mutex_init(&ph->print, NULL);
+	ph->exit = ft_malloc(sizeof(int));
+	*(ph->exit) = 0;
 	i = 0;
-	while (i < (int)env.num_philo)
+	while (i < env.num_philo)
 	{
 		ph[i].phid = i + 1;
 		ph[i].env = env;
+		ph[i].exit = ph->exit;
 		ph[i].fork_left = &fork[i];
-		if (i < (int)(env.num_philo - 1))
+		if (i < env.num_philo - 1)
 			ph[i].fork_right = &fork[i + 1];
 		else
 			ph[i].fork_right = &fork[0];
-		ph[i].t0 = t0;
+		ph[i].t0 = ph->t0;
+		ph[i].print = ph->print;
 		i++;
 	}
 	return (ph);
