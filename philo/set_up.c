@@ -62,10 +62,17 @@ t_fork	*init_forks(int num_philo)
 	{
 		pthread_mutex_init(&fork[i].lock, NULL);
 		fork[i].fid = i + 1;
-		fork[i].available = 1;
 		i++;
 	}
 	return (fork);
+}
+
+void init_control_locks(t_ph *ph)
+{
+	ph->status_lock = ft_malloc(sizeof(pthread_mutex_t));
+	ph->lastmeal_lock = ft_malloc(sizeof(pthread_mutex_t));
+	pthread_mutex_init(ph->status_lock, NULL);
+	pthread_mutex_init(ph->lastmeal_lock, NULL);
 }
 
 t_ph	*init_ph(t_env	env, t_fork *fork)
@@ -75,8 +82,7 @@ t_ph	*init_ph(t_env	env, t_fork *fork)
 
 	ph = ft_malloc(sizeof(t_ph) * env.num_philo);
 	gettimeofday(&ph->t0, NULL);
-	pthread_mutex_init(&ph->status_lock, NULL);
-	pthread_mutex_init(&ph->lastmeal_lock, NULL);
+	init_control_locks(ph);
 	ph->exit = ft_malloc(sizeof(int));
 	*(ph->exit) = 0;
 	i = 0;
@@ -85,6 +91,7 @@ t_ph	*init_ph(t_env	env, t_fork *fork)
 		ph[i].phid = i + 1;
 		ph[i].env = env;
 		ph[i].exit = ph->exit;
+		ph[i].meal_taken = 0;
 		ph[i].fork_left = &fork[i];
 		if (i < env.num_philo - 1)
 			ph[i].fork_right = &fork[i + 1];

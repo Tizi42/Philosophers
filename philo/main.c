@@ -19,8 +19,11 @@ void clean_up(t_ph *ph, t_fork *fork)
 	i = 0;
 	while (i < ph->env.num_philo)
 		pthread_mutex_destroy(&fork[i++].lock);
-	pthread_mutex_destroy(&ph->status_lock);
-	pthread_mutex_destroy(&ph->lastmeal_lock);
+	pthread_mutex_destroy(ph->status_lock);
+	pthread_mutex_destroy(ph->lastmeal_lock);
+	free(ph->status_lock);
+	free(ph->lastmeal_lock);
+	free(ph->exit);
 	free(fork);
 	free(ph);
 }
@@ -30,12 +33,12 @@ long	data_lastmeal(t_ph *ph, int action)
 	long	timestamp;
 
 	timestamp = 0;
-	pthread_mutex_lock(&ph->lastmeal_lock);
+	pthread_mutex_lock(ph->lastmeal_lock);
 	if (action == STAMP)
 		timestamp = get_timestamp(ph->lastmeal);
 	if (action == UPDATE)
 		gettimeofday(&ph->lastmeal, NULL);
-	pthread_mutex_unlock(&ph->lastmeal_lock);
+	pthread_mutex_unlock(ph->lastmeal_lock);
 	return (timestamp);
 }
 
@@ -50,16 +53,16 @@ int	death_of_a_ph(t_ph *ph)
 	{
 		if (data_lastmeal(&ph[i], STAMP) > ph->env.timespan_die)
 		{
-			pthread_mutex_lock(&ph->status_lock);
-			if (ph[i].env.times_must_eat != 0)
+			pthread_mutex_lock(ph->status_lock);
+			if (ph[i].meal_taken != ph->env.times_must_eat)
 			{
-				*(ph->exit) = ph->env.num_philo;
+				*(ph->exit) += ph->env.num_philo;
 				print_status(&ph[i], DEATH);
 				ret = 1;
 			}
-			else if (*(ph->exit) == ph->env.num_philo)
+			else if (*(ph->exit) >= ph->env.num_philo)
 				ret = 1;
-			pthread_mutex_unlock(&ph->status_lock);
+			pthread_mutex_unlock(ph->status_lock);
 			if (ret)
 				return (ret);
 		}

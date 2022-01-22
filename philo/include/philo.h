@@ -44,7 +44,6 @@ typedef struct	s_fork
 {
 	pthread_mutex_t	lock;
 	int				fid;
-	int				available;
 }	t_fork;
 
 typedef struct	s_ph
@@ -52,11 +51,12 @@ typedef struct	s_ph
 	pthread_t		tid;
 	int				phid;
 	t_env			env;
+	int				meal_taken;
 	int				*exit;
 	t_fork			*fork_left;
 	t_fork			*fork_right;
-	pthread_mutex_t	status_lock;
-	pthread_mutex_t	lastmeal_lock;
+	pthread_mutex_t	*status_lock;
+	pthread_mutex_t	*lastmeal_lock;
 	struct timeval	t0;
 	struct timeval	lastmeal;
 }	t_ph;
