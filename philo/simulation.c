@@ -44,6 +44,18 @@ int	start_simulation(t_ph *ph)
 	return (0);
 }
 
+int	sleep_and_think(t_ph *ph)
+{
+	int	ret;
+
+	ret = update_status(ph, SLEEP);
+	if (ret)
+		return (ret);
+	usleep(ph->env.timespan_sleep * 1000);
+	ret = update_status(ph, THINK);
+	return (ret);
+}
+
 void	*life_circle(void *arg)
 {
 	t_ph	*ph;
@@ -51,15 +63,20 @@ void	*life_circle(void *arg)
 
 	ph = (t_ph *)arg;
 	//pthread_detach(ph->tid);
-	//gettimeofday(&ph->lastmeal, NULL);
 	data_lastmeal(ph, UPDATE);
 	ret = 0;
 	while (!ret)
 	{
 		ret = get_fork_and_eat(ph);
-		ret = update_status(ph, SLEEP);
-		usleep(ph->env.timespan_sleep * 1000);
-		ret = update_status(ph, THINK);
+		if (ret == 2)
+		{
+			sleep_and_think(ph);
+			return (NULL);
+		}
+		else if (ret == 1)
+			return (NULL);
+		else
+			ret = sleep_and_think(ph);
 	}
 	return (NULL);
 }
@@ -70,16 +87,15 @@ int	get_fork_and_eat(t_ph *ph)
 
 	ret = 0;
 	pthread_mutex_lock(&ph->fork_left->lock);
-	update_status(ph, FORK_L);
-	pthread_mutex_lock(&ph->fork_right->lock);
-	update_status(ph, FORK_R);
-
-	ret = eat(ph);
-	/*print_status(ph, EAT);
-	gettimeofday(&ph->lastmeal, NULL);
-	usleep(ph->env.timespan_eat * 1000);*/
-
-	pthread_mutex_unlock(&ph->fork_right->lock);
+	ret = update_status(ph, FORK_L);
+	if (!ret)
+	{
+		pthread_mutex_lock(&ph->fork_right->lock);
+		ret = update_status(ph, FORK_R);
+		if (!ret)
+			ret = eat(ph);
+		pthread_mutex_unlock(&ph->fork_right->lock);
+	}
 	pthread_mutex_unlock(&ph->fork_left->lock);
 	return (ret);
 }
@@ -90,18 +106,17 @@ int	eat(t_ph *ph)
 
 	ret = 0;
 	pthread_mutex_lock(ph->status_lock);
-	if (*(ph->exit) >= ph->env.num_philo)
+	if (*(ph->exit))
 		ret = 1;
 	else
-		print_status(ph, EAT);
-	ph->meal_taken++;
-	if (ph->meal_taken == ph->env.times_must_eat)
 	{
-		ret = 1;
-		(*ph->exit)++;
+		data_lastmeal(ph, UPDATE);
+		print_status(ph, EAT);
+		ph->meal_taken++;
+		if (ph->meal_taken == ph->env.times_must_eat)
+			ret = 2;
 	}
 	pthread_mutex_unlock(ph->status_lock);
-	data_lastmeal(ph, UPDATE); // is it a good location ?
 	usleep(ph->env.timespan_eat * 1000);
 	return (ret);
 }
@@ -126,7 +141,7 @@ int	update_status(t_ph *ph, char *status)
 
 	ret = 0;
 	pthread_mutex_lock(ph->status_lock);
-	if (*(ph->exit) >= ph->env.num_philo)
+	if (*(ph->exit))
 		ret = 1;
 	else
 		print_status(ph, status);

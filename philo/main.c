@@ -42,6 +42,20 @@ long	data_lastmeal(t_ph *ph, int action)
 	return (timestamp);
 }
 
+int	everyone_is_full(t_ph *ph)
+{
+	int	i;
+
+	i = 0;
+	while (i < ph->env.num_philo)
+	{
+		if (ph[i].meal_taken != ph->env.times_must_eat)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	death_of_a_ph(t_ph *ph)
 {
 	int i;
@@ -51,21 +65,22 @@ int	death_of_a_ph(t_ph *ph)
 	ret = 0;
 	while (i < (int)ph->env.num_philo)
 	{
+		pthread_mutex_lock(ph->status_lock);
 		if (data_lastmeal(&ph[i], STAMP) > ph->env.timespan_die)
 		{
-			pthread_mutex_lock(ph->status_lock);
+			
 			if (ph[i].meal_taken != ph->env.times_must_eat)
 			{
-				*(ph->exit) += ph->env.num_philo;
+				*(ph->exit) = 1;
 				print_status(&ph[i], DEATH);
 				ret = 1;
 			}
-			else if (*(ph->exit) >= ph->env.num_philo)
+			else if (everyone_is_full(ph))
 				ret = 1;
-			pthread_mutex_unlock(ph->status_lock);
+		}
+		pthread_mutex_unlock(ph->status_lock);
 			if (ret)
 				return (ret);
-		}
 		i++;
 	}
 	return (0);
@@ -80,7 +95,7 @@ int	monitor(t_ph *ph)
 		n = death_of_a_ph(ph);
 		if (n)
 			return (n);
-		usleep(2000); // ?
+		usleep(1000); // ?x
 	}
 }
 
