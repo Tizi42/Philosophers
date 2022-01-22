@@ -65,11 +65,10 @@ int	death_of_a_ph(t_ph *ph)
 	ret = 0;
 	while (i < (int)ph->env.num_philo)
 	{
-		pthread_mutex_lock(ph->status_lock);
 		if (data_lastmeal(&ph[i], STAMP) > ph->env.timespan_die)
 		{
-			
-			if (ph[i].meal_taken != ph->env.times_must_eat)
+			pthread_mutex_lock(ph->status_lock);
+			if (data_lastmeal(&ph[i], STAMP) > ph->env.timespan_die && ph[i].meal_taken != ph->env.times_must_eat)
 			{
 				*(ph->exit) = 1;
 				print_status(&ph[i], DEATH);
@@ -77,10 +76,10 @@ int	death_of_a_ph(t_ph *ph)
 			}
 			else if (everyone_is_full(ph))
 				ret = 1;
-		}
-		pthread_mutex_unlock(ph->status_lock);
+			pthread_mutex_unlock(ph->status_lock);
 			if (ret)
 				return (ret);
+		}
 		i++;
 	}
 	return (0);
