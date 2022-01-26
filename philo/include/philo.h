@@ -28,55 +28,78 @@
 # define FORK_R "has taken his right fork"
 # define DEATH "died"
 
-# define STAMP 1
-# define UPDATE 2
+# define GET 1
+# define SET 2
+# define SPAN 3
 
-typedef struct	s_env
+typedef struct s_env
 {
 	int				num_philo;
-	unsigned int	timespan_die;
-	unsigned int	timespan_eat;
-	unsigned int	timespan_sleep;
+	unsigned int	span_die;
+	unsigned int	span_eat;
+	unsigned int	span_sleep;
 	int				times_must_eat;
 }	t_env;
 
-typedef struct	s_fork
+typedef struct s_fork
 {
 	pthread_mutex_t	lock;
 	int				fid;
 }	t_fork;
 
-typedef struct	s_ph
+typedef struct s_control_lock
+{
+	pthread_mutex_t	*exit;
+	pthread_mutex_t	*print;
+	pthread_mutex_t	eat_or_die;
+}	t_control_lock;
+
+typedef struct s_ph
 {
 	pthread_t		tid;
+	pthread_t		monitor_tid;
 	int				phid;
 	t_env			env;
-	int				meal_taken;
+	int				mealtaken;
 	int				*exit;
 	t_fork			*fork_left;
 	t_fork			*fork_right;
-	pthread_mutex_t	*status_lock;
-	pthread_mutex_t	*lastmeal_lock;
-	struct timeval	t0;
+	t_control_lock	lock;
+	struct timeval	*t0;
 	struct timeval	lastmeal;
 }	t_ph;
 
-long	data_lastmeal(t_ph *ph, int action);
-
-int		eat(t_ph *ph);
-
+/* main.c */
+void	clean_up(t_ph *ph, t_fork *fork);
+void	join_threads(t_ph *ph);
 int		start_simulation(t_ph *ph);
-void	*life_circle(void *arg);
-int		get_fork_and_eat(t_ph *ph);
-long	get_timestamp(struct timeval t0);
-void 	print_status(t_ph *ph, char *status);
-int		update_status(t_ph *ph, char *status);
 
-/* set_up.c */
+/* parse.c */
 int		valid_args(int ac, char **av);
 t_env	parse(char **av);
-t_fork	*init_forks(int num_philo);
-t_ph	*init_ph(t_env	env, t_fork *fork);
 
+/* init.c */
+t_fork	*init_forks(int num_philo);
+void	init_control_locks(t_ph *ph);
+t_ph	*init_ph(t_env	env, t_fork *fork);
+void	*life_circle_uni(void *arg);
+
+/* simulation.c */
+int		start_simulation_part2(t_ph *ph);
+void	*life_circle(void *arg);
+int		get_fork_n_eat(t_ph *ph);
+int		eat(t_ph *ph);
+int		sleep_n_think(t_ph *ph);
+
+/* monitor.c */
+int		create_monitor(t_ph *ph);
+void	monitor_circle(t_ph *ph, long mealstamp);
+void	*monitor_on(void *arg);
+
+/* shared.c */
+int		data_exit(t_ph *ph, int action);
+int		print_status(t_ph *ph, char *status);
+long	get_timestamp(struct timeval t0, struct timeval *t1);
+void	time_pass_by(long ms);
 
 #endif

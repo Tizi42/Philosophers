@@ -12,7 +12,7 @@
 
 NAME	= philosophers
 
-SRCS	= main.c set_up.c simulation.c
+SRCS	= main.c parse.c init.c simulation.c monitor.c shared.c
 
 DIRSRC	= philo
 
@@ -35,7 +35,7 @@ RM	= rm -rf
 all:	${NAME}
 
 ${NAME}: ${OBJS}
-	make -s -C libft
+	make -C libft
 	${CC} ${CFLAGS} ${INCLUDE} $^ ${LIBS} -o $@
 
 ${DIROBJ}:
