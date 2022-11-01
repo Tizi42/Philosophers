@@ -6,15 +6,15 @@
 #    By: tyuan <tyuan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/01/16 19:10:22 by tyuan             #+#    #+#              #
-#    Updated: 2022/01/16 19:10:30 by tyuan            ###   ########.fr        #
+#    Updated: 2022/01/27 09:44:30 by tyuan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= philosophers
+NAME	= philo
 
 SRCS	= main.c parse.c init.c simulation.c monitor.c shared.c
 
-DIRSRC	= philo
+DIRSRC	= srcs
 
 OBJS	= ${addprefix ${DIROBJ}/, ${SRCS:.c=.o}}
 
@@ -24,11 +24,11 @@ LIBS	= -Llibft -lft
 
 CC		= gcc
 
-CFLAGS	= -Wall -Wextra -Werror -g3 -fsanitize=thread
+CFLAGS	= -Wall -Wextra -Werror
 
-INCLUDE	= -I philo/include/ -I libft/includes/
+INCLUDE	= -I include/ -I libft/includes/
 
-HEADER	= push_swap.h
+HEADER	= philo.h
 
 RM	= rm -rf
 
